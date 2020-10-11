@@ -3,10 +3,28 @@ const HTMLWebpackPlugin = require('html-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-
+const OptimizeCssAssetPlugin = require('optimize-css-assets-webpack-plugin')
+const TerserWebpackPlugin = require('terser-webpack-plugin')
 
 const isDev = process.env.NODE_ENV === 'development'
-console.log('IS DEV:', isDev)
+const isProd = !isDev
+
+const optimization = () => {
+    const config = {
+        splitChunks: {
+            
+        }
+    }
+
+    if (isProd) {
+        config.minimizer = [
+            new OptimizeCssAssetPlugin(),
+            new TerserWebpackPlugin()
+        ]
+    }
+
+    return config
+}
 
 module.exports = {
     mode: 'development',
@@ -21,6 +39,7 @@ module.exports = {
             '@models': path.resolve(__dirname, 'src/styles')
         }
     },
+    optimization: optimization(),
     devServer: {
         contentBase: path.join(__dirname, 'dist'),
         open: true,
@@ -29,7 +48,10 @@ module.exports = {
     },
     plugins: [
         new HTMLWebpackPlugin({
-            template: './src/index.html'
+            template: './src/index.html',
+            minify: {
+                collapseWhitespace: isProd
+            }
         }) ,
         new CleanWebpackPlugin(),
         new CopyWebpackPlugin({

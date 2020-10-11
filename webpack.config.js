@@ -3,6 +3,7 @@ const HTMLWebpackPlugin = require('html-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 
 module.exports = {
+    mode: 'development',
     entry: './src/index.js',
     output: {
         filename: 'bundle.js',
@@ -14,12 +15,16 @@ module.exports = {
             '@models': path.resolve(__dirname, 'src/styles')
         }
     },
+    devServer: {
+        contentBase: path.join(__dirname, 'dist'),
+        open: true,
+        port: 9000
+    },
     plugins: [
         new HTMLWebpackPlugin({
             template: './src/index.html'
         }) ,
         new CleanWebpackPlugin,
-
     ],
     module: {
         rules: [

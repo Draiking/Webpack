@@ -2,7 +2,7 @@
   "name": "workwebpack",
   "version": "1.0.0",
   "description": "webpack",
-  "main": "index.js",
+  "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "webpack --mode development",
@@ -19,5 +19,9 @@
     "style-loader": "^2.0.0",
     "webpack": "^4.44.2",
     "webpack-cli": "^4.0.0"
+  },
+  "dependencies": {
+    "jquery": "^3.5.1",
+    "normalize.css": "^8.0.1"
   }
 }

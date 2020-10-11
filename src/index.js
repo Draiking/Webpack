@@ -1,2 +1,3 @@
-import './styles/styles.css'
+import $ as $ from 'jquery'
+import '@styles/styles.css'
 

@@ -26,6 +26,23 @@ const optimization = () => {
     return config
 }
 
+const babelOptions = preset => {
+    const opts = {
+        preset: [
+            '@babel/preset-env'
+        ],
+        plugins: [
+            '@babel/plugin-proposal-class-properties'
+        ]
+    }
+
+    if (preset) {
+        opts.preset.push()
+    }
+
+    return opts
+}
+
 const cssLoader = extra => {
     const loaders = [
         {
@@ -47,7 +64,7 @@ const cssLoader = extra => {
 
 module.exports = {
     mode: 'development',
-    entry: './src/index.js',
+    entry: ['@babel/polyfill', './src/index.js'],
     output: {
         filename: 'bundle.js',
         path: path.resolve(__dirname, 'dist')
@@ -102,15 +119,21 @@ module.exports = {
                 use: ['file-loader']
             },
             {
-                test: /\.m?js$/,
+                test: /\.js$/,
                 exclude: /node_modules/,
                 use: {
                   loader: 'babel-loader',
-                  options: {
-                    presets: ['@babel/preset-env']
-                  }
+                  options: babelOptions()
                 }
-              }
+            },
+            {
+                test: /\.ts$/,
+                exclude: /node_modules/,
+                use: {
+                  loader: 'babel-loader',
+                  options: babelOptions('@babel/preset-typescript')
+                }
+            }
         ]
     }
 }

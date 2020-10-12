@@ -5,6 +5,8 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCssAssetPlugin = require('optimize-css-assets-webpack-plugin')
 const TerserWebpackPlugin = require('terser-webpack-plugin')
+const loader = require('sass-loader')
+const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer')
 
 const isDev = process.env.NODE_ENV === 'development'
 const isProd = !isDev
@@ -62,6 +64,46 @@ const cssLoader = extra => {
     return loaders
 }
 
+const jsLoaders = () => {
+    const loaders = [{
+        loaders: 'babel-loader',
+        options: babelOptions()
+      }]
+
+      if (isDev) {
+          loaders.push('eslint-loader')
+      }
+          
+    return loaders
+}
+
+const plugins = () => {
+    const base = [
+            new HTMLWebpackPlugin({
+                template: './src/index.html',
+                minify: {
+                    collapseWhitespace: isProd
+                }
+            }) ,
+            new CleanWebpackPlugin(),
+            new CopyWebpackPlugin({
+                patterns: [{
+                    from: path.resolve(__dirname, 'src/favicon.ico'),
+                    to: path.resolve(__dirname, 'dist')
+                }]
+            }),
+            new MiniCssExtractPlugin({
+                filename: 'styles.css'
+            })
+    ]
+
+    if (isProd) {
+        base.push(new BundleAnalyzerPlugin())
+    }
+
+    return base
+}
+
 module.exports = {
     mode: 'development',
     entry: ['@babel/polyfill', './src/index.js'],
@@ -82,24 +124,8 @@ module.exports = {
         port: 9000,
         hot: isDev
     },
-    plugins: [
-        new HTMLWebpackPlugin({
-            template: './src/index.html',
-            minify: {
-                collapseWhitespace: isProd
-            }
-        }) ,
-        new CleanWebpackPlugin(),
-        new CopyWebpackPlugin({
-            patterns: [{
-                from: path.resolve(__dirname, 'src/favicon.ico'),
-                to: path.resolve(__dirname, 'dist')
-            }]
-        }),
-        new MiniCssExtractPlugin({
-            filename: 'styles.css'
-        })
-    ],
+    devtool: isDev ? 'source-map' : '',
+    plugins: plugins(),
     module: {
         rules: [
             {
@@ -121,10 +147,7 @@ module.exports = {
             {
                 test: /\.js$/,
                 exclude: /node_modules/,
-                use: {
-                  loader: 'babel-loader',
-                  options: babelOptions()
-                }
+                use: jsLoaders()
             },
             {
                 test: /\.ts$/,
